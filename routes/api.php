@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\V1\Auth\RegisterController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -7,9 +8,20 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+//I Use apiPrefix: 'api/v1' in  middleware 
+//This means that the middleware will be applied for all routes implies that all API endpoints
+//will be accessible under the /api/v1 path. 
+
+
+
+// Authentication Routes
+Route::post('/register', [RegisterController::class, 'register']);
+
+
+
+
 
 // route for test 
-// I use in middleware the apiPrefix: 'api/v1',  for use in all routes
 Route::get('/test', function (Request $request) {
     return response()->json([
         'status' => 'success',
