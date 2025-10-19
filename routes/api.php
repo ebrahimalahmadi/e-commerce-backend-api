@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\V1\Auth\LoginController;
 use App\Http\Controllers\API\V1\Auth\LogoutController;
+use App\Http\Controllers\API\V1\Auth\MeController;
 use App\Http\Controllers\API\V1\Auth\RegisterController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -23,8 +24,9 @@ Route::post('/login', [LoginController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
 
-    // // Protected routes
+    // // Profile Routes
     Route::post('logout', [LogoutController::class, 'logout']);
+    Route::get('/me', [MeController::class, 'me']);
 });
 
 
