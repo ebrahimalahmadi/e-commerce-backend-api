@@ -37,9 +37,9 @@ Route::middleware('auth:sanctum')->group(function () {
     // // User Management Routes
     Route::get('/users', [UserController::class, 'index'])->name('users.index'); // List all users
     Route::post('/users', [UserController::class, 'store'])->name('users.store'); // Create a new user
-    // Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show'); // Show a specific user
-    // Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update'); // Update a user
-    // Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy'); // Delete a user
+    Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show'); // Show a specific user
+    Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update'); // Update a user
+    Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy'); // Delete a user
 });
 
 
