@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\V1\Auth\LoginController;
+use App\Http\Controllers\API\V1\Auth\LogoutController;
 use App\Http\Controllers\API\V1\Auth\RegisterController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -18,6 +19,13 @@ Route::get('/user', function (Request $request) {
 // Authentication Routes
 Route::post('/register', [RegisterController::class, 'register']);
 Route::post('/login', [LoginController::class, 'login']);
+// Route::post('/logout', [LogoutController::class, 'logout']);
+
+Route::middleware('auth:sanctum')->group(function () {
+
+    // // Protected routes
+    Route::post('logout', [LogoutController::class, 'logout']);
+});
 
 
 
@@ -34,4 +42,4 @@ Route::get('/test', function (Request $request) {
         ]
     ]);
 });
-// http://e-commerce-backend-api.test/api/v1/test
+// http://localhost/api/v1/test
