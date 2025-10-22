@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\V1\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\Request;
 // 
 use Illuminate\Support\Facades\Hash;
@@ -13,21 +14,23 @@ class LoginController extends Controller
 {
     //
 
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
         //  Validate input
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
-            'password' => 'required|string|min:6'
-        ]);
+        // $validator = Validator::make($request->all(), [
+        //     'email' => 'required|email',
+        //     'password' => 'required|string|min:6'
+        // ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Validation errors',
-                'errors' => $validator->errors()
-            ], 422);
-        }
+        $validator = $request->validated();
+
+        // if ($validator->fails()) {
+        //     return response()->json([
+        //         'status' => false,
+        //         'message' => 'Validation errors',
+        //         'errors' => $validator->errors()
+        //     ], 422);
+        // }
 
         //  Find user by email
         $user = User::where('email', $request->email)->first();
