@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\V1\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\ChangePasswordRequest;
 use App\Http\Requests\Auth\UpdateProfileRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -11,7 +12,6 @@ use Illuminate\Support\Facades\Validator;
 
 class ProfileController extends Controller
 {
-    //
     /**
      * Show the authenticated user's profile.
      */
@@ -48,35 +48,39 @@ class ProfileController extends Controller
      * Update the authenticated user's password.
      */
 
-    public function updatePassword(Request $request)
+    public function updatePassword(ChangePasswordRequest $request)
     {
         $user = Auth::user();
 
-        $validator = Validator::make($request->all(), [
-            'current_password' => 'required|string',
-            'new_password' => 'required|string|min:6|confirmed',
-        ]);
+        $validated = $request->validated();
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
+        $user = Auth::user();
+        $validated = $request->validated();
 
-        // Check if the current password matches the user's password
         // تحقق من كلمة المرور الحالية
-        if (!Hash::check($request->current_password, $user->password)) {
-            return response()->json(['message' => 'Current password is incorrect'], 400);
+        if (!Hash::check($validated['current_password'], $user->password)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Current password is incorrect'
+            ], 400);
         }
 
         // تحقق أن كلمة المرور الجديدة ليست نفس القديمة
-        if (Hash::check($request->new_password, $user->password)) {
-            return response()->json(['message' => 'New password cannot be the same as the current password'], 400);
+        if (Hash::check($validated['new_password'], $user->password)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'New password cannot be the same as the current password'
+            ], 400);
         }
 
         // تحديث كلمة المرور
-        $user->password = Hash::make($request->new_password);
+        $user->password = Hash::make($validated['new_password']);
         $user->save();
 
-        return response()->json(['message' => 'Password updated successfully'], 200);
+        return response()->json([
+            'status' => true,
+            'message' => 'Password updated successfully'
+        ], 200);
     }
 }
 
@@ -125,3 +129,45 @@ class ProfileController extends Controller
     //         'data' => $user
     //     ], 200);
     // }
+
+
+
+    // =======================
+
+
+    
+//     /**
+//      * Update the authenticated user's password.
+//      */
+
+//     public function updatePassword(Request $request)
+//     {
+//         $user = Auth::user();
+
+//         $validator = Validator::make($request->all(), [
+//             'current_password' => 'required|string',
+//             'new_password' => 'required|string|min:6|confirmed',
+//         ]);
+
+//         if ($validator->fails()) {
+//             return response()->json(['errors' => $validator->errors()], 422);
+//         }
+
+//         // Check if the current password matches the user's password
+//         // تحقق من كلمة المرور الحالية
+//         if (!Hash::check($request->current_password, $user->password)) {
+//             return response()->json(['message' => 'Current password is incorrect'], 400);
+//         }
+
+//         // تحقق أن كلمة المرور الجديدة ليست نفس القديمة
+//         if (Hash::check($request->new_password, $user->password)) {
+//             return response()->json(['message' => 'New password cannot be the same as the current password'], 400);
+//         }
+
+//         // تحديث كلمة المرور
+//         $user->password = Hash::make($request->new_password);
+//         $user->save();
+
+//         return response()->json(['message' => 'Password updated successfully'], 200);
+//     }
+// }
