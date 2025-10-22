@@ -135,7 +135,7 @@ class UserController extends Controller
                 'message' => 'User not found.',
             ], 404);
         }
-
+        // التحقق من صحة البيانات
         $validatedData = $request->validate([
             'name'     => 'sometimes|required|string|max:255',
             'email'    => [
@@ -146,6 +146,7 @@ class UserController extends Controller
                 Rule::unique('users', 'email')->ignore($user->id),
             ],
             'password' => 'sometimes|required|string|min:6',
+            // التحقق من صحة الرقم
             'phone'    => [
                 'nullable',
                 'string',
@@ -160,6 +161,7 @@ class UserController extends Controller
             'status'   => ['nullable', Rule::in(['active', 'inactive'])],
         ]);
 
+        //  تنظيف رقم الهاتف قبل الحفظ
         $cleanPhone = $request->input('phone');
         if ($cleanPhone) {
             $cleanPhone = preg_replace('/[^0-9]/', '', $cleanPhone);
@@ -168,6 +170,7 @@ class UserController extends Controller
             }
         }
 
+        //  تحديث البيانات
         $user->name     = $validatedData['name'] ?? $user->name;
         $user->email    = $validatedData['email'] ?? $user->email;
         if (!empty($validatedData['password'])) {
@@ -187,144 +190,6 @@ class UserController extends Controller
             'data'    => $user,
         ]);
     }
-
-
-
-    // public function update(Request $request, User $user)
-    // {
-    //     // الآن $user هو الـ Model الصحيح مباشرة
-    //     $validatedData = $request->validate([
-    //         'name'     => 'sometimes|required|string|max:255',
-    //         'email'    => [
-    //             'sometimes',
-    //             'required',
-    //             'string',
-    //             'email',
-    //             Rule::unique('users', 'email')->ignore($user->id),
-    //         ],
-    //         'password' => 'sometimes|required|string|min:6',
-    //         'phone'    => [
-    //             'nullable',
-    //             'string',
-    //             'max:20',
-    //             'regex:/^[0-9+\-\s()]*$/',
-    //             Rule::unique('users', 'phone')->ignore($user->id),
-    //         ],
-    //         'address'  => 'nullable|string',
-    //         'country'  => 'nullable|string',
-    //         'city'     => 'nullable|string',
-    //         'zip_code' => 'nullable|string',
-    //         'status'   => ['nullable', Rule::in(['active', 'inactive'])],
-    //     ]);
-
-    //     // تحديث الحقول
-    //     $user->name     = $request->input('name', $user->name);
-    //     $user->email    = $request->input('email', $user->email);
-    //     $user->address  = $request->input('address', $user->address);
-    //     $user->country  = $request->input('country', $user->country);
-    //     $user->city     = $request->input('city', $user->city);
-    //     $user->zip_code = $request->input('zip_code', $user->zip_code);
-    //     $user->status   = $request->input('status', $user->status);
-
-    //     // الهاتف
-    //     if ($request->filled('phone')) {
-    //         $cleanPhone = preg_replace('/[^0-9]/', '', $request->input('phone'));
-    //         if (!str_starts_with($cleanPhone, '967')) {
-    //             $cleanPhone = '967' . ltrim($cleanPhone, '0');
-    //         }
-    //         $user->phone = $cleanPhone;
-    //     }
-
-    //     // كلمة المرور
-    //     if ($request->filled('password')) {
-    //         $user->password = Hash::make($request->input('password'));
-    //     }
-
-    //     $user->save();
-
-    //     return response()->json([
-    //         'status'  => true,
-    //         'message' => 'User updated successfully.',
-    //         'data'    => $user,
-    //     ]);
-    // }
-
-
-
-
-    /**
-     * Update the specified resource in storage.
-     */
-    // public function update(Request $request, string $id)
-    // {
-    //     $user = User::find($id);
-
-    //     if (!$user) {
-    //         return response()->json([
-    //             'status'  => false,
-    //             'message' => 'User not found.',
-    //         ], 404);
-    //     }
-
-    //     // ✅ التحقق من صحة البيانات
-    //     $validatedData = $request->validate([
-    //         'name'     => 'sometimes|required|string|max:255',
-    //         'email'    => [
-    //             'sometimes',
-    //             'required',
-    //             'string',
-    //             'email',
-    //             Rule::unique('users', 'email')->ignore($user->id),
-    //         ],
-    //         'password' => 'sometimes|required|string|min:6',
-
-    //         // 📞 التحقق من صحة الرقم
-    //         'phone' => [
-    //             'nullable',
-    //             'string',
-    //             'max:20',
-    //             'regex:/^[0-9+\-\s()]*$/',
-    //             Rule::unique('users', 'phone')->ignore($user->id),
-    //         ],
-
-    //         'address'  => 'nullable|string',
-    //         'country'  => 'nullable|string',
-    //         'city'     => 'nullable|string',
-    //         'zip_code' => 'nullable|string',
-    //         'status'   => ['nullable', Rule::in(['active', 'inactive'])],
-    //     ]);
-
-    //     // 🧹 تنظيف رقم الهاتف قبل الحفظ
-    //     $cleanPhone = $request->input('phone');
-    //     if ($cleanPhone) {
-    //         $cleanPhone = preg_replace('/[^0-9]/', '', $cleanPhone);
-
-    //         if (!str_starts_with($cleanPhone, '967')) {
-    //             $cleanPhone = '967' . ltrim($cleanPhone, '0');
-    //         }
-    //     }
-
-    //     // 🔄 تحديث البيانات
-    //     $user->name     = $validatedData['name'] ?? $user->name;
-    //     $user->email    = $validatedData['email'] ?? $user->email;
-    //     if (!empty($validatedData['password'])) {
-    //         $user->password = Hash::make($validatedData['password']);
-    //     }
-    //     $user->phone    = $cleanPhone ?? $user->phone;
-    //     $user->address  = $validatedData['address'] ?? $user->address;
-    //     $user->country  = $validatedData['country'] ?? $user->country;
-    //     $user->city     = $validatedData['city'] ?? $user->city;
-    //     $user->zip_code = $validatedData['zip_code'] ?? $user->zip_code;
-    //     $user->status   = $validatedData['status'] ?? $user->status;
-    //     $user->save();
-
-    //     // ✅ النتيجة
-    //     return response()->json([
-    //         'status'  => true,
-    //         'message' => 'User updated successfully.',
-    //         'data'    => $user,
-    //     ]);
-    // }
 
 
 

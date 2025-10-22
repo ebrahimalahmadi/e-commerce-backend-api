@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\API\V1\Auth\LoginController;
 use App\Http\Controllers\API\V1\Auth\LogoutController;
-use App\Http\Controllers\API\V1\Auth\MeController;
 use App\Http\Controllers\API\V1\Auth\ProfileController;
 use App\Http\Controllers\API\V1\Auth\RegisterController;
 use App\Http\Controllers\API\V1\User\UserController;
@@ -20,13 +19,11 @@ Route::get('/user', function (Request $request) {
 // Authentication Routes
 Route::post('/register', [RegisterController::class, 'register']);
 Route::post('/login', [LoginController::class, 'login']);
-// Route::post('/logout', [LogoutController::class, 'logout']);
 
 Route::middleware('auth:sanctum')->group(function () {
 
     // // Profile Routes
     Route::post('logout', [LogoutController::class, 'logout']);
-    Route::get('/me', [MeController::class, 'me']);
 
     // Profile Routes
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');

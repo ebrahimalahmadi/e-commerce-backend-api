@@ -26,7 +26,6 @@ class RegisterController extends Controller
             'country' => 'nullable|string',
             'city' => 'nullable|string',
             'zip_code' => 'nullable|string',
-            // 'status' => 'nullable|string',
             'status' => ['nullable', Rule::in(['active', 'inactive'])],
 
         ]);

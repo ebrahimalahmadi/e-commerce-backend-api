@@ -95,7 +95,8 @@ class ProfileController extends Controller
         //   ===========================================
         $validator = Validator::make($request->all(), [
             'name' => 'sometimes|string|max:255',
-            'email' => 'sometimes|string|email|unique:users,email,' . $user->id,
+            // // not allow the use for update the email 
+            // 'email' => 'sometimes|string|email|unique:users,email,' . $user->id,
             'phone' => 'nullable|string|unique:users,phone,' . $user->id,
             'address' => 'nullable|string',
             'country' => 'nullable|string',
