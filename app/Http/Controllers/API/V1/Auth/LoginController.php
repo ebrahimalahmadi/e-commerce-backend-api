@@ -16,35 +16,22 @@ class LoginController extends Controller
 
     public function login(LoginRequest $request)
     {
-        //  Validate input
-        // $validator = Validator::make($request->all(), [
-        //     'email' => 'required|email',
-        //     'password' => 'required|string|min:6'
-        // ]);
+        // تم التحقق من البيانات تلقائيًا بواسطة LoginRequest
+        $validated = $request->validated();
 
-        $validator = $request->validated();
+        // البحث عن المستخدم
+        $user = User::where('email', $validated['email'])->first();
 
-        // if ($validator->fails()) {
-        //     return response()->json([
-        //         'status' => false,
-        //         'message' => 'Validation errors',
-        //         'errors' => $validator->errors()
-        //     ], 422);
-        // }
-
-        //  Find user by email
-        $user = User::where('email', $request->email)->first();
-
-        //  Check user and password
-        if (!$user || !Hash::check(value: $request->password, hashedValue: $user->password)) {
+        // التحقق من صحة كلمة المرور
+        if (!$user || !Hash::check($validated['password'], $user->password)) {
             return response()->json([
                 'status' => false,
                 'message' => 'Invalid email or password'
             ], 401);
         }
 
-        //  Create token
-        $token = $user->createToken(name: 'API Token')->plainTextToken;
+        // إنشاء التوكن
+        $token = $user->createToken('API Token')->plainTextToken;
 
         return response()->json([
             'status' => true,
