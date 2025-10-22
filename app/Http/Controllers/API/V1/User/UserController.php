@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\V1\User;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\User\StoreUserRequest;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
@@ -53,28 +54,12 @@ class UserController extends Controller
     /**
      * Store a newly created user.
      */
-    public function store(Request $request)
+    public function store(StoreUserRequest $request)
     {
-        $validatedData = $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|string|email|unique:users,email',
-            'password' => 'required|string|min:6',
-            'phone'    => [
-                'nullable',
-                'string',
-                'max:20',
-                'regex:/^[0-9+\-\s()]*$/',
-                'unique:users,phone',
-            ],
-            'address'  => 'nullable|string',
-            'country'  => 'nullable|string',
-            'city'     => 'nullable|string',
-            'zip_code' => 'nullable|string',
-            'status'   => ['nullable', Rule::in(['active', 'inactive'])],
-        ]);
+        $validatedData = $request->validated();
 
         // تنظيف رقم الهاتف
-        $cleanPhone = $request->input('phone');
+        $cleanPhone = $validatedData['phone'] ?? null;
         if ($cleanPhone) {
             $cleanPhone = preg_replace('/[^0-9]/', '', $cleanPhone);
             if (!str_starts_with($cleanPhone, '967')) {
@@ -100,7 +85,6 @@ class UserController extends Controller
             'data'    => $user,
         ], 201);
     }
-
     /**
      * Display the specified user.
      */
@@ -215,3 +199,58 @@ class UserController extends Controller
         ]);
     }
 }
+
+
+
+
+
+// /**
+//      * Store a newly created user.
+//      */
+//     public function store(Request $request)
+//     {
+//         $validatedData = $request->validate([
+//             'name'     => 'required|string|max:255',
+//             'email'    => 'required|string|email|unique:users,email',
+//             'password' => 'required|string|min:6',
+//             'phone'    => [
+//                 'nullable',
+//                 'string',
+//                 'max:20',
+//                 'regex:/^[0-9+\-\s()]*$/',
+//                 'unique:users,phone',
+//             ],
+//             'address'  => 'nullable|string',
+//             'country'  => 'nullable|string',
+//             'city'     => 'nullable|string',
+//             'zip_code' => 'nullable|string',
+//             'status'   => ['nullable', Rule::in(['active', 'inactive'])],
+//         ]);
+
+//         // تنظيف رقم الهاتف
+//         $cleanPhone = $request->input('phone');
+//         if ($cleanPhone) {
+//             $cleanPhone = preg_replace('/[^0-9]/', '', $cleanPhone);
+//             if (!str_starts_with($cleanPhone, '967')) {
+//                 $cleanPhone = '967' . ltrim($cleanPhone, '0');
+//             }
+//         }
+
+//         $user = new User();
+//         $user->name     = $validatedData['name'];
+//         $user->email    = $validatedData['email'];
+//         $user->password = Hash::make($validatedData['password']);
+//         $user->phone    = $cleanPhone;
+//         $user->address  = $validatedData['address'] ?? null;
+//         $user->country  = $validatedData['country'] ?? null;
+//         $user->city     = $validatedData['city'] ?? null;
+//         $user->zip_code = $validatedData['zip_code'] ?? null;
+//         $user->status   = $validatedData['status'] ?? 'active';
+//         $user->save();
+
+//         return response()->json([
+//             'status'  => true,
+//             'message' => 'User created successfully.',
+//             'data'    => $user,
+//         ], 201);
+//     }
