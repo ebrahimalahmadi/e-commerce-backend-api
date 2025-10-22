@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\V1\User;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\StoreUserRequest;
+use App\Http\Requests\User\UpdateUserRequest;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
@@ -109,7 +110,7 @@ class UserController extends Controller
     /**
      * Update the specified user.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateUserRequest $request, string $id)
     {
         $user = User::find($id);
 
@@ -119,34 +120,11 @@ class UserController extends Controller
                 'message' => 'User not found.',
             ], 404);
         }
-        // التحقق من صحة البيانات
-        $validatedData = $request->validate([
-            'name'     => 'sometimes|required|string|max:255',
-            'email'    => [
-                'sometimes',
-                'required',
-                'string',
-                'email',
-                Rule::unique('users', 'email')->ignore($user->id),
-            ],
-            'password' => 'sometimes|required|string|min:6',
-            // التحقق من صحة الرقم
-            'phone'    => [
-                'nullable',
-                'string',
-                'max:20',
-                'regex:/^[0-9+\-\s()]*$/',
-                Rule::unique('users', 'phone')->ignore($user->id),
-            ],
-            'address'  => 'nullable|string',
-            'country'  => 'nullable|string',
-            'city'     => 'nullable|string',
-            'zip_code' => 'nullable|string',
-            'status'   => ['nullable', Rule::in(['active', 'inactive'])],
-        ]);
 
-        //  تنظيف رقم الهاتف قبل الحفظ
-        $cleanPhone = $request->input('phone');
+        $validatedData = $request->validated();
+
+        // تنظيف رقم الهاتف
+        $cleanPhone = $validatedData['phone'] ?? null;
         if ($cleanPhone) {
             $cleanPhone = preg_replace('/[^0-9]/', '', $cleanPhone);
             if (!str_starts_with($cleanPhone, '967')) {
@@ -154,7 +132,7 @@ class UserController extends Controller
             }
         }
 
-        //  تحديث البيانات
+        // تحديث البيانات
         $user->name     = $validatedData['name'] ?? $user->name;
         $user->email    = $validatedData['email'] ?? $user->email;
         if (!empty($validatedData['password'])) {
@@ -174,7 +152,6 @@ class UserController extends Controller
             'data'    => $user,
         ]);
     }
-
 
 
     /**
@@ -199,6 +176,17 @@ class UserController extends Controller
         ]);
     }
 }
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -253,4 +241,77 @@ class UserController extends Controller
 //             'message' => 'User created successfully.',
 //             'data'    => $user,
 //         ], 201);
+//     }
+
+
+// ====================================
+// ========= Update User ==============
+// ====================================
+//   /**
+//      * Update the specified user.
+//      */
+//     public function update(Request $request, string $id)
+//     {
+//         $user = User::find($id);
+
+//         if (!$user) {
+//             return response()->json([
+//                 'status'  => false,
+//                 'message' => 'User not found.',
+//             ], 404);
+//         }
+//         // التحقق من صحة البيانات
+//         $validatedData = $request->validate([
+//             'name'     => 'sometimes|required|string|max:255',
+//             'email'    => [
+//                 'sometimes',
+//                 'required',
+//                 'string',
+//                 'email',
+//                 Rule::unique('users', 'email')->ignore($user->id),
+//             ],
+//             'password' => 'sometimes|required|string|min:6',
+//             // التحقق من صحة الرقم
+//             'phone'    => [
+//                 'nullable',
+//                 'string',
+//                 'max:20',
+//                 'regex:/^[0-9+\-\s()]*$/',
+//                 Rule::unique('users', 'phone')->ignore($user->id),
+//             ],
+//             'address'  => 'nullable|string',
+//             'country'  => 'nullable|string',
+//             'city'     => 'nullable|string',
+//             'zip_code' => 'nullable|string',
+//             'status'   => ['nullable', Rule::in(['active', 'inactive'])],
+//         ]);
+
+//         //  تنظيف رقم الهاتف قبل الحفظ
+//         $cleanPhone = $request->input('phone');
+//         if ($cleanPhone) {
+//             $cleanPhone = preg_replace('/[^0-9]/', '', $cleanPhone);
+//             if (!str_starts_with($cleanPhone, '967')) {
+//                 $cleanPhone = '967' . ltrim($cleanPhone, '0');
+//             }
+//         }
+
+//         //  تحديث البيانات
+//         $user->name     = $validatedData['name'] ?? $user->name;
+//         $user->email    = $validatedData['email'] ?? $user->email;
+//         if (!empty($validatedData['password'])) {
+//             $user->password = Hash::make($validatedData['password']);
+//         }
+//         $user->phone    = $cleanPhone ?? $user->phone;
+//         $user->address  = $validatedData['address'] ?? $user->address;
+//         $user->country  = $validatedData['country'] ?? $user->country;
+//         $user->city     = $validatedData['city'] ?? $user->city;
+//         $user->zip_code = $validatedData['zip_code'] ?? $user->zip_code;
+//         $user->status   = $validatedData['status'] ?? $user->status;
+//         $user->save();
+
+//         return response()->json([
+//             'status'  => true,
+//             'message' => 'User updated successfully.',
+//             'data'    => $user,
+//         ]);
 //     }
