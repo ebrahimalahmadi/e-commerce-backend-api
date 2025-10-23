@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\V1\Admin\CategoryController;
 use App\Http\Controllers\API\V1\Auth\LoginController;
 use App\Http\Controllers\API\V1\Auth\LogoutController;
 use App\Http\Controllers\API\V1\Auth\ProfileController;
@@ -37,6 +38,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show'); // Show a specific user
     Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update'); // Update a user
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy'); // Delete a user
+
+    // Category Management Routes
+    Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index'); // List all categories
+    Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store'); // Create a new category
+    Route::get('/categories/{category}', [CategoryController::class, 'show'])->name('categories.show'); // Show a specific category
+    Route::put('/categories/{category}', [CategoryController::class, 'update'])->name('categories.update'); // Update a category
+    // Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy'); // Delete a category
 });
 
 
