@@ -10,6 +10,8 @@ class Category extends Model
     //
     use HasFactory;
 
+    protected $table = 'categories';
+
     protected $fillable = [
         'name',
         'slug',
@@ -23,4 +25,10 @@ class Category extends Model
     // {
     //     return 'slug';
     // }
+
+
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
 }
