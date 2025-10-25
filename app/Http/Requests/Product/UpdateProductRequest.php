@@ -20,28 +20,6 @@ class UpdateProductRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
-    // public function rules(): array
-    // {
-    //     $productId = $this->route('product')?->id ?? null;
-    //     return [
-    //         //
-    //         'name' => [
-    //             'sometimes',
-    //             'string',
-    //             'max:255',
-    //             Rule::unique('products', 'name')->ignore($productId),
-    //         ],
-
-    //         // 'slug' => 'sometimes|string|max:255|unique:products,slug,' . $productId,
-    //         'description' => 'nullable|string',
-    //         'price' => 'sometimes|numeric|min:0',
-    //         'stock' => 'sometimes|integer|min:0',
-    //         'featured' => 'sometimes|boolean',
-    //         'active' => 'sometimes|boolean',
-    //         'category_id' => 'sometimes|exists:categories,id',
-    //         // 'image' => 'sometimes|image|mimes:jpg,jpeg,png,gif|max:2048',
-    //     ];
-    // }
     public function rules(): array
     {
         $productId = $this->route('product')?->id ?? $this->route('id');

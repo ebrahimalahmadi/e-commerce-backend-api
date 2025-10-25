@@ -12,31 +12,105 @@ use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
+
+    // -------------------
+    // Laravel map() Example with Eloquent Collection
+    // -------------------
+    // for  Fetch all products i use the method map()
+    // -------------------
+    // -----Search about Laravel map() Example with Eloquent Collection map()
+    // -------------------
+    // Laravel map() Example with Eloquent Collection map() is a method provided by Laravel's Eloquent Collection class that allows you to transform each item in the collection using a callback function. It is similar to PHP's native array_map() function but is specifically designed to work with Eloquent collections.
+    // -------------------
+
+
     /**
      * Display a listing of the resource.
      */
     // public function index()
     // {
     //     //
+    //     $products = Product::all();
+    //     return response()->json([
+    //         'status' => true,
+    //         'message' => 'Products fetched successfully',
+    //         'data' => $products,
+    //     ], 200);
     // }
+    // // -----------------
+
+
+    // -----------------
+    // ---------Laravel map() Example with Eloquent Collection
+    // -----------------
     public function index()
     {
-        //
-        $products = Product::all();
+        $products = Product::with('category')->latest()->get();
+
+        $formatted = $products->map(function ($product) {
+            return [
+                'id' => $product->id,
+                'name' => $product->name,
+                'slug' => $product->slug,
+                'description' => $product->description,
+                'price' => number_format($product->price, 2),
+                'stock' => $product->stock,
+                'featured' => $product->featured,
+                'active' => $product->active,
+                'category' => [
+                    'id' => $product->category->id,
+                    'name' => $product->category->name,
+                ],
+                'created_at' => $product->created_at->toDateTimeString(),
+                'updated_at' => $product->updated_at->toDateTimeString(),
+            ];
+        });
+
         return response()->json([
             'status' => true,
-            'message' => 'Products fetched successfully',
-            'data' => $products,
+            'message' => 'Products retrieved successfully',
+            'data' => $formatted,
         ], 200);
     }
+
+
 
     /**
      * Store a newly created resource in storage.
      */
-    // public function store(Request $request)
+    //     public function store(StoreProductRequest $request)
     // {
-    //     //
+    //     $product = new Product();
+
+    //     $product->name = $request->name;
+    //     $product->slug = Str::slug($request->name);
+    //     $product->description = $request->description;
+    //     $product->price = $request->price;
+    //     $product->stock = $request->stock ?? 0;
+    //     $product->featured = $request->featured ?? false;
+    //     $product->active = $request->active ?? true;
+    //     $product->category_id = $request->category_id;
+
+    //     $product->save();
+
+    //     return response()->json([
+    //         'status' => true,
+    //         'message' => 'Product created successfully',
+    //         'data' => [
+    //             'id' => $product->id,
+    //             'name' => $product->name,
+    //             'slug' => $product->slug,
+    //             'price' => number_format($product->price, 2),
+    //             'stock' => $product->stock,
+    //             'featured' => $product->featured,
+    //             'active' => $product->active,
+    //             'category_id' => $product->category_id,
+    //             'created_at' => $product->created_at->toDateTimeString(),
+    //         ],
+    //     ], 201);
     // }
+
+    // -----------------
     public function store(StoreProductRequest $request)
     {
         //
@@ -75,85 +149,55 @@ class ProductController extends Controller
     /**
      * Display the specified resource.
      */
+
+    // -----------------
     // public function show(string $id)
     // {
     //     //
+    //     $product = Product::find($id);
+    //     if (!$product) {
+    //         return response()->json([
+    //             'status' => false,
+    //             'message' => 'Product not found',
+    //         ], 404);
+    //     }
+    //     return response()->json([
+    //         'status' => true,
+    //         'message' => 'Product fetched successfully',
+    //         'data' => $product,
+    //     ], 200);
     // }
-    public function show(string $id)
+    // -----------------
+    public function show(Product $product)
     {
-        //
-        $product = Product::find($id);
-        if (!$product) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Product not found',
-            ], 404);
-        }
         return response()->json([
             'status' => true,
-            'message' => 'Product fetched successfully',
-            'data' => $product,
+            'message' => 'Product retrieved successfully',
+            'data' => [
+                'id' => $product->id,
+                'name' => $product->name,
+                'slug' => $product->slug,
+                'description' => $product->description,
+                'price' => number_format($product->price, 2),
+                'stock' => $product->stock,
+                'featured' => $product->featured,
+                'active' => $product->active,
+                'category' => [
+                    'id' => $product->category->id,
+                    'name' => $product->category->name,
+                ],
+                // 'image_url' => $product->image ? Storage::url($product->image) : null,
+                'created_at' => $product->created_at->toDateTimeString(),
+                'updated_at' => $product->updated_at->toDateTimeString(),
+            ],
         ], 200);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    // public function update(Request $request, string $id)
-    // {
-    //     //
-    // }
-    // public function update(UpdateProductRequest $request, string $id)
-    // {
-    //     //
-    //     $product = Product::find($id);
-    //     if (!$product) {
-    //         return response()->json([
-    //             'status' => false,
-    //             'message' => 'Product not found',
-    //         ], 404);
-    //     }
-
-    //     $validatedData = $request->validated();
-    //     $validatedData['slug'] = Str::slug($validatedData['name']);
-    //     // dd($validatedData);
-
-    //     $product->update($validatedData);
-
-    //     return response()->json([
-    //         'status' => true,
-    //         'message' => 'Product updated successfully',
-    //         'data' => $product,
-    //     ], 200);
-    // }
-    // -----------------
-    // public function update(UpdateProductRequest $request, string $id)
-    // {
-    //     $product = Product::find($id);
-
-    //     if (!$product) {
-    //         return response()->json([
-    //             'status' => false,
-    //             'message' => 'Product not found',
-    //         ], 404);
-    //     }
-
-    //     $validatedData = $request->validated();
-
-    //     // فقط إذا تم إرسال الاسم، نولّد slug جديد
-    //     if (isset($validatedData['name'])) {
-    //         $validatedData['slug'] = Str::slug($validatedData['name']);
-    //     }
-
-    //     $product->update($validatedData);
-
-    //     return response()->json([
-    //         'status' => true,
-    //         'message' => 'Product updated successfully',
-    //         'data' => $product->fresh(),
-    //     ], 200);
-    // }
-    // // -----------------
+    // // -----------------this is good
+    // 
     // public function update(UpdateProductRequest $request, Product $product)
     // {
     //     $validatedData = $request->validated();
@@ -168,15 +212,57 @@ class ProductController extends Controller
     //     return response()->json([
     //         'status' => true,
     //         'message' => 'Product updated successfully',
+    //         'data' => $product,
+    //     ], 200);
+    // }
+
+    // // -----------------
+    // // this function uses mass assignment to update only the fields provided in the request.
+    // // -----------------
+
+    // public function update(UpdateProductRequest $request, Product $product)
+    // {
+    //     $data = $request->only([
+    //         'name',
+    //         'description',
+    //         'price',
+    //         'stock',
+    //         'featured',
+    //         'active',
+    //         'category_id',
+    //     ]);
+
+    //     if (isset($data['name'])) {
+    //         $data['slug'] = Str::slug($data['name']);
+    //     }
+
+    //     $product->update($data);
+
+    //     return response()->json([
+    //         'status' => true,
+    //         'message' => 'Product updated successfully',
     //         'data' => $product->fresh(),
     //     ], 200);
     // }
+
     // -----------------
-    public function update(UpdateProductRequest $request, Product $product)
+    // this function uses the product ID from the route parameter to find and update the product.
+    // -----------------
+
+    public function update(UpdateProductRequest $request, string $id)
     {
+        $product = Product::find($id);
+
+        if (!$product) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Product not found',
+            ], 404);
+        }
+
         $validatedData = $request->validated();
 
-        // توليد slug فقط إذا تم إرسال name
+        // فقط إذا تم إرسال الاسم، نولّد slug جديد
         if (isset($validatedData['name'])) {
             $validatedData['slug'] = Str::slug($validatedData['name']);
         }
@@ -186,9 +272,11 @@ class ProductController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'Product updated successfully',
-            'data' => $product,
+            'data' => $product->fresh(),
         ], 200);
     }
+
+
 
 
 
