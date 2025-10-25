@@ -11,7 +11,7 @@ class UpdateCategoryRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,8 +21,12 @@ class UpdateCategoryRequest extends FormRequest
      */
     public function rules(): array
     {
+        $categoryId = $this->route('category')?->id ?? null;
+
         return [
-            //
+            'name' => 'sometimes|string|max:255|unique:categories,name,' . $categoryId,
+            'description' => 'nullable|string',
+            'image' => 'sometimes|image|mimes:jpg,jpeg,png,gif|max:2048',
         ];
     }
 }

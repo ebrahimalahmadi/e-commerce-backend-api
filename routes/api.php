@@ -44,7 +44,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store'); // Create a new category
     Route::get('/categories/{category}', [CategoryController::class, 'show'])->name('categories.show'); // Show a specific category
     Route::put('/categories/{category}', [CategoryController::class, 'update'])->name('categories.update'); // Update a category
-    // Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy'); // Delete a category
+    Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy'); // Delete a category
 });
 
 
