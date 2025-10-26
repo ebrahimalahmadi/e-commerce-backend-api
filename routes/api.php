@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\V1\Admin\CategoryController;
 use App\Http\Controllers\API\V1\Admin\ProductController;
+use App\Http\Controllers\API\V1\Admin\ProductImageController;
 use App\Http\Controllers\API\V1\Auth\LoginController;
 use App\Http\Controllers\API\V1\Auth\LogoutController;
 use App\Http\Controllers\API\V1\Auth\ProfileController;
@@ -53,6 +54,75 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show'); // Show a specific product
     Route::put('/products/{product}', [ProductController::class, 'update'])->name('products.update'); // Update a product
     Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy'); // Delete a product
+
+    // Product Image Management Routes
+    // Route::get('/product-images', [ProductImageController::class, 'index'])->name('product-images.index'); // List all product images
+    // Route::post('/product-images', [ProductImageController::class, 'store'])->name('product-images.store'); // Create a new product image
+    // Route::get('/product-images/{product_image}', [ProductImageController::class, 'show'])->name('product-images.show'); // Show a specific product image
+    // Route::put('/product-images/{product_image}', [ProductImageController::class, 'update'])->name('product-images.update'); // Update a product image
+    // Route::delete('/product-images/{product_image}', [ProductImageController::class, 'destroy'])->name('product-images.destroy'); // Delete a product image
+
+
+    // // Product Image Management Routes
+    // Route::prefix('products/{product}')->group(function () {
+    //     Route::get('/images', [ProductImageController::class, 'index'])->name('product-images.index'); // List all images for a product
+    //     // the url will be like this : /api/v1/products/1/images
+    //     // http://e-commerce-backend-api.test/api/v1/products/1/images
+    //     Route::post('/images', [ProductImageController::class, 'store'])->name('product-images.store'); // Add a new image to a product
+    //     // the url will be like this : /api/v1/products/1/images
+    //     // http://e-commerce-backend-api.test/api/v1/products/1/images
+    //     Route::get('/images/{image}', [ProductImageController::class, 'show'])->name('product-images.show'); // Show a specific image of a product
+    //     Route::put('/images/{image}', [ProductImageController::class, 'update'])->name('product-images.update'); // Update a specific image of a product
+    //     Route::delete('/images/{image}', [ProductImageController::class, 'destroy'])->name('product-images.destroy'); // Delete a specific image of a product
+    //     Route::patch('images/{image}/primary', [ProductImageController::class, 'setPrimary'])->name('product-images.setPrimary'); // Set an image as primary
+
+    // });
+
+    // Product Image Management Routes
+    // Route::prefix('products/{product}')->group(function () {
+    //     Route::get('/images', [ProductImageController::class, 'index'])->name('product-images.index'); // List all images for a product
+    //     Route::post('/images', [ProductImageController::class, 'store'])->name('product-images.store'); // Add a new image to a product
+    //     Route::get('/images/{image}', [ProductImageController::class, 'show'])->name('product-images.show'); // Show a specific image of a product
+    //     Route::put('/images/{image}', [ProductImageController::class, 'update'])->name('product-images.update'); // Update a specific image of a product
+    //     Route::delete('/images/{image}', [ProductImageController::class, 'destroy'])->name('product-images.destroy'); // Delete a specific image of a product
+    //     Route::patch('images/{image}/primary', [ProductImageController::class, 'setPrimary'])->name('product-images.setPrimary'); // Set an image as primary
+
+    // });
+
+    // Route::prefix('products/{product}')->group(function () {
+    //     Route::get('images', [ProductImageController::class, 'index'])->name('product-images.index'); // عرض كل الصور
+    //     Route::post('images', [ProductImageController::class, 'store'])->name('product-images.store'); // رفع صورة أو أكثر
+    //     Route::get('images/{image}', [ProductImageController::class, 'show'])->name('product-images.show'); // عرض صورة واحدة
+    //     Route::put('images/{image}', [ProductImageController::class, 'update'])->name('product-images.update'); // تعديل صورة
+    //     Route::delete('images/{image}', [ProductImageController::class, 'destroy'])->name('product-images.destroy'); // حذف صورة
+    //     Route::patch('images/{image}/primary', [ProductImageController::class, 'setPrimary'])->name('product-images.setPrimary'); // تعيين صورة رئيسية
+    // });
+
+    // Final Product Image Management Routes
+    // Route::prefix('products/{product}')->group(function () {
+    //     Route::get('images', [ProductImageController::class, 'index'])->name('product-images.index'); // عرض كل الصور
+    //     Route::post('images', [ProductImageController::class, 'store'])->name('product-images.store'); // رفع صورة أو أكثر
+    //     Route::get('images/{image}', [ProductImageController::class, 'show'])->name('product-images.show'); // عرض صورة واحدة
+    //     Route::put('images/{image}', [ProductImageController::class, 'update'])->name('product-images.update'); // تعديل صورة
+    //     Route::delete('images/{image}', [ProductImageController::class, 'destroy'])->name('product-images.destroy'); // حذف صورة
+    //     Route::patch('images/{image}/primary', [ProductImageController::class, 'setPrimary'])->name('product-images.setPrimary'); // تعيين صورة رئيسية
+    // });
+    // Final Product Image Management Routes
+
+
+
+    // ✅ راوت ثابت خارج مجموعة {product}
+    Route::get('products-with-images', [ProductImageController::class, 'listProductsWithImages'])->name('product-images.products-with-images');
+
+    // ✅ مجموعة خاصة بالمنتج الواحد
+    Route::prefix('products/{product}')->group(function () {
+        Route::get('images', [ProductImageController::class, 'index'])->name('product-images.index');
+        Route::post('images', [ProductImageController::class, 'store'])->name('product-images.store');
+        Route::get('images/{image}', [ProductImageController::class, 'show'])->name('product-images.show');
+        Route::put('images/{image}', [ProductImageController::class, 'update'])->name('product-images.update');
+        Route::delete('images/{image}', [ProductImageController::class, 'destroy'])->name('product-images.destroy');
+        Route::patch('images/{image}/primary', [ProductImageController::class, 'setPrimary'])->name('product-images.setPrimary');
+    });
 });
 
 
