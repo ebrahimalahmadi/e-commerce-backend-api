@@ -29,7 +29,6 @@ class CategoryFactory extends Factory
         // ----------------------------
 
         // $name = 'Category No-' . $this->faker->sentence();
-        // $name = 'Category No-' . $this->faker->sentence(3);
         $name = 'Category No-' . $this->faker->sentence();
         return [
             'name' => $name,

@@ -14,7 +14,7 @@ class ProductImage extends Model
     protected $guarded = ['id'];
 
     protected $fillable = [
-        // 'product_id',
+        'product_id',
         'path',
         'is_primary',
     ];

@@ -25,6 +25,5 @@ class DatabaseSeeder extends Seeder
             CategorySeeder::class,
         ]);
         // now use the command: php artisan db:seed
-        // to run the DatabaseSeeder which in turn runs the CategorySeeder
     }
 }

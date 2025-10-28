@@ -19,7 +19,8 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::latest()->get();
+        // $categories = Category::latest()->get();
+        $categories = Category::withCount('products')->latest()->get();
 
         $formatted = $categories->map(function ($category) {
             return [
@@ -27,9 +28,11 @@ class CategoryController extends Controller
                 'name' => $category->name,
                 'slug' => $category->slug,
                 'description' => $category->description,
-                'image_url' => $category->image ? Storage::url($category->image) : null,
+                // 'image_url' => $category->image ? Storage::url($category->image) : null,
+                'image_url' => asset('storage/' . $category->image) ?? null,
                 'created_at' => $category->created_at->toDateTimeString(),
                 'updated_at' => $category->updated_at->toDateTimeString(),
+                'product_count' => $category->products_count,
             ];
         });
 
@@ -67,8 +70,10 @@ class CategoryController extends Controller
                 'name' => $category->name,
                 'slug' => $category->slug,
                 'description' => $category->description,
-                'image_url' => $category->image ? Storage::url($category->image) : null,
+                // 'image_url' => $category->image ? Storage::url($category->image) : null,
+                'image_url' => asset('storage/' . $category->image) ?? null,
                 'created_at' => $category->created_at->toDateTimeString(),
+                'updated_at' => $category->updated_at->toDateTimeString(),
             ],
         ], 201);
     }
@@ -77,28 +82,17 @@ class CategoryController extends Controller
     /**
      * Display the specified resource.
      */
-    // public function show(string $id)
-    // {
-    //     //
-    //     // $category = Category::find(id: $id);
-    //     // $category = Category::where('id', $id)->first();
-    //     $category = Category::where('id', $id)->first();
-    //     if (!$category) {
-    //         return response()->json([
-    //             'status' => false,
-    //             'message' => 'Category not found'
-    //         ], 404);
-    //     }
-    //     return response()->json([
-    //         'status' => true,
-    //         'message' => 'Category retrieved successfully',
-    //         'data' => $category
-    //     ]);
-    // }
-
-    // --------------------
-    public function show(Category $category)
+    public function show()
     {
+        // $category = Category::find(request()->route('category'));
+        $category = Category::withCount('products')->find(request()->route('category'));
+        // Not found 404
+        if (!$category) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Category not found',
+            ], 404);
+        }
         return response()->json([
             'status' => true,
             'message' => 'Category retrieved successfully',
@@ -107,9 +101,32 @@ class CategoryController extends Controller
                 'name' => $category->name,
                 'slug' => $category->slug,
                 'description' => $category->description,
-                'image_url' => $category->image ? Storage::url($category->image) : null,
+                // 'image_url' => $category->image ? Storage::url($category->image) : null,
+                // 'image_url' => isset($category->image) ? Storage::url($category->image) : null,
+                'image_url' => asset('storage/' . $category->image) ?? null,
                 'created_at' => $category->created_at->toDateTimeString(),
                 'updated_at' => $category->updated_at->toDateTimeString(),
+                'product_count' => $category->products_count,
+                'products' => $category->products()->get()->map(function ($product) {
+                    return [
+                        'id' => $product->id,
+                        'name' => $product->name,
+                        'slug' => $product->slug,
+                        'description' => $product->description,
+                        'price' => $product->price,
+                        // 'image_url' => $product->image ? Storage::url($product->image) : null,
+                        'image_url' => asset('storage/' . $product->image) ?? null,
+                        'stock' => $product->stock,
+                        'quantity' => $product->quantity,
+                        'status' => $product->status,
+                        'active' => $product->active,
+                        'featured' => $product->featured,
+                        'category_id' => $product->category_id,
+                        'created_at' => $product->created_at->toDateTimeString(),
+                        'updated_at' => $product->updated_at->toDateTimeString(),
+                    ];
+                }),
+
             ],
         ], 200);
     }
@@ -119,9 +136,19 @@ class CategoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateCategoryRequest $request, Category $category)
+    public function update(UpdateCategoryRequest $request)
     {
-        // ✅ تحديث الصورة إذا تم رفعها
+        $category = Category::find($request->route('category'));
+
+        // Not found 404
+        if (!$category) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Category not found',
+            ], 404);
+        }
+
+        //  تحديث الصورة إذا تم رفعها
         if ($request->hasFile('image')) {
             // حذف الصورة القديمة إن وجدت
             if ($category->image) {
@@ -132,7 +159,7 @@ class CategoryController extends Controller
             $category->image = $request->file('image')->store('categories', 'public');
         }
 
-        // ✅ تحديث الاسم والوصف إذا تم إرسالها
+        //  تحديث الاسم والوصف إذا تم إرسالها
         if ($request->has('name')) {
             $category->name = $request->name;
             $category->slug = Str::slug($request->name);
@@ -152,7 +179,10 @@ class CategoryController extends Controller
                 'name' => $category->name,
                 'slug' => $category->slug,
                 'description' => $category->description,
-                'image_url' => $category->image ? Storage::url($category->image) : null,
+                // 'image_url' => $category->image ? Storage::url($category->image) : null,
+                'image_url' => asset('storage/' . $category->image) ?? null,
+                'created_at' => $category->created_at->toDateTimeString(),
+                'updated_at' => $category->updated_at->toDateTimeString(),
             ],
         ]);
     }
@@ -160,8 +190,17 @@ class CategoryController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Category $category)
+    public function destroy()
     {
+        $category = Category::find(request()->route('category'));
+        // Not found 404
+        if (!$category) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Category not found',
+            ], 404);
+        }
+
         // حذف الصورة من التخزين إذا كانت موجودة
         if ($category->image) {
             Storage::disk('public')->delete($category->image);

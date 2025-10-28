@@ -28,8 +28,6 @@ class UpdateProfileRequest extends FormRequest
 
         return [
             'name' => 'sometimes|string|max:255',
-            // // not allow the use for update the email 
-            // 'email' => 'sometimes|string|email|unique:users,email,' . $userId,
             'phone' => 'nullable|string|unique:users,phone,' . $userId,
             'address' => 'nullable|string',
             'country' => 'nullable|string',

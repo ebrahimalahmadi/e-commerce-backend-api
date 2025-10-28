@@ -24,14 +24,12 @@ class StoreProductRequest extends FormRequest
         return [
             //
             'name' => 'required|string|max:255|unique:products,name',
-            // 'slug' => 'required|string|max:255|unique:products,slug',
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
             'featured' => 'sometimes|boolean',
             'active' => 'sometimes|boolean',
             'category_id' => 'required|exists:categories,id',
-            // // 'image' => 'sometimes|image|mimes:jpg,jpeg,png,gif|max:2048',
         ];
     }
 }

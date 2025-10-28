@@ -19,14 +19,6 @@ class Category extends Model
         'image',
     ];
 
-    // i want use the slug as route key
-    // Using Slug Instead of ID in Laravel Routes
-    // public function getRouteKeyName()
-    // {
-    //     return 'slug';
-    // }
-
-
     public function products()
     {
         return $this->hasMany(Product::class);

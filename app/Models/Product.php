@@ -21,7 +21,6 @@ class Product extends Model
         'featured',
         'active',
         'category_id',
-        // 'image',
     ];
     public function category()
     {
