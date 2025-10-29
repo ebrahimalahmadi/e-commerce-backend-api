@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\V1\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Category\StoreCategoryRequest;
 use App\Http\Requests\Category\UpdateCategoryRequest;
+use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -19,13 +20,21 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::withCount('products')->latest()->get();
+        // $categories = Category::withCount('products')->latest()->get();
+        // $categories = Category::withCount('products')->latest()->paginate(10);
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Categories retrieved successfully',
-            'data' => $categories,
-        ], 200);
+        // $categories = Category::withCount('products')->latest()->paginate(10);
+        // $categories = Category::withCount('products')->latest()->paginate(10); // 10 per page
+        // $categories = Category::withCount('products')->latest()->get();
+        $categories = Category::withCount('products')->latest()->paginate(10); // 10 per page
+
+
+
+        $categoriesResource = CategoryResource::collection($categories);
+
+        return apiResponse(200, 'Categories retrieved successfully', $categoriesResource);
+
+        // return apiResponse(200, 'Categories retrieved successfully', $categories);
     }
 
     /**
@@ -44,11 +53,13 @@ class CategoryController extends Controller
             'description' => $request->description,
             'image' => $imagePath,
         ]);
-        return response()->json([
-            'status' => true,
-            'message' => 'Category created successfully',
-            'data' => $category
-        ], 201);
+        // return response()->json([
+        //     'status' => true,
+        //     'message' => 'Category created successfully',
+        //     'data' => $category
+        // ], 201);
+        // return apiResponse(201, 'Category created successfully', $category);
+        return apiResponse(201, 'Category created successfully', $category);
     }
 
 
