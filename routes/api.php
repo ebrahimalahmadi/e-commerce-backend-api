@@ -80,13 +80,5 @@ route::get('/test', function () {
 
 
 // ===================================================
- // الحل الأفضل: استخدم POST مع override لطريقة PUT
- // في Postman:
- // غيّر نوع الطلب إلى POST.
- // في قسم Body > form-data، أرسل كل البيانات كالمعتاد.
- // أضف مفتاح جديد:
- // Key: _method
- // Value: PUT
- // Type: Text
- // Laravel سيتعرف على هذا المفتاح ويعامل الطلب كأنه PUT.
- // ===================================================
+//Note: For update requests (including image uploads) in Postman, use POST and include _method=PUT to simulate a PUT request in Laravel
+// ===================================================

@@ -29,7 +29,8 @@ class CategoryFactory extends Factory
         // ----------------------------
 
         // $name = 'Category No-' . $this->faker->sentence();
-        $name = 'Category No-' . $this->faker->sentence();
+        // $name = 'Category No-' . $this->faker->sentence();
+        $name = 'Test Category -' . $this->faker->sentence();
         return [
             'name' => $name,
             'slug' => Str::slug($name),

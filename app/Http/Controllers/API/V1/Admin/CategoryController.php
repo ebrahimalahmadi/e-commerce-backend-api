@@ -19,27 +19,12 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        // $categories = Category::latest()->get();
         $categories = Category::withCount('products')->latest()->get();
-
-        $formatted = $categories->map(function ($category) {
-            return [
-                'id' => $category->id,
-                'name' => $category->name,
-                'slug' => $category->slug,
-                'description' => $category->description,
-                // 'image_url' => $category->image ? Storage::url($category->image) : null,
-                'image_url' => asset('storage/' . $category->image) ?? null,
-                'created_at' => $category->created_at->toDateTimeString(),
-                'updated_at' => $category->updated_at->toDateTimeString(),
-                'product_count' => $category->products_count,
-            ];
-        });
 
         return response()->json([
             'status' => true,
             'message' => 'Categories retrieved successfully',
-            'data' => $formatted,
+            'data' => $categories,
         ], 200);
     }
 
@@ -48,33 +33,21 @@ class CategoryController extends Controller
      */
     public function store(StoreCategoryRequest $request)
     {
-        $category = new Category();
-
-        // حفظ الصورة إذا تم رفعها
+        $imagePath = null;
         if ($request->hasFile('image')) {
-            $category->image = $request->file('image')->store('categories', 'public');
+            $imagePath = $request->file('image')->store('categories', 'public');
         }
 
-        // حفظ البيانات الأساسية
-        $category->name = $request->name;
-        $category->slug = Str::slug($request->name);
-        $category->description = $request->description;
-
-        $category->save();
-
+        $category = Category::create([
+            'name' => $request->name,
+            'slug' => Str::slug($request->name),
+            'description' => $request->description,
+            'image' => $imagePath,
+        ]);
         return response()->json([
             'status' => true,
             'message' => 'Category created successfully',
-            'data' => [
-                'id' => $category->id,
-                'name' => $category->name,
-                'slug' => $category->slug,
-                'description' => $category->description,
-                // 'image_url' => $category->image ? Storage::url($category->image) : null,
-                'image_url' => asset('storage/' . $category->image) ?? null,
-                'created_at' => $category->created_at->toDateTimeString(),
-                'updated_at' => $category->updated_at->toDateTimeString(),
-            ],
+            'data' => $category
         ], 201);
     }
 
@@ -82,125 +55,49 @@ class CategoryController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show()
+    public function show(Category $category)
     {
-        // $category = Category::find(request()->route('category'));
-        $category = Category::withCount('products')->find(request()->route('category'));
-        // Not found 404
-        if (!$category) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Category not found',
-            ], 404);
-        }
+        $category->load('products');
         return response()->json([
             'status' => true,
             'message' => 'Category retrieved successfully',
-            'data' => [
-                'id' => $category->id,
-                'name' => $category->name,
-                'slug' => $category->slug,
-                'description' => $category->description,
-                // 'image_url' => $category->image ? Storage::url($category->image) : null,
-                // 'image_url' => isset($category->image) ? Storage::url($category->image) : null,
-                'image_url' => asset('storage/' . $category->image) ?? null,
-                'created_at' => $category->created_at->toDateTimeString(),
-                'updated_at' => $category->updated_at->toDateTimeString(),
-                'product_count' => $category->products_count,
-                'products' => $category->products()->get()->map(function ($product) {
-                    return [
-                        'id' => $product->id,
-                        'name' => $product->name,
-                        'slug' => $product->slug,
-                        'description' => $product->description,
-                        'price' => $product->price,
-                        // 'image_url' => $product->image ? Storage::url($product->image) : null,
-                        'image_url' => asset('storage/' . $product->image) ?? null,
-                        'stock' => $product->stock,
-                        'quantity' => $product->quantity,
-                        'status' => $product->status,
-                        'active' => $product->active,
-                        'featured' => $product->featured,
-                        'category_id' => $product->category_id,
-                        'created_at' => $product->created_at->toDateTimeString(),
-                        'updated_at' => $product->updated_at->toDateTimeString(),
-                    ];
-                }),
-
-            ],
+            'data' => $category
         ], 200);
     }
-
-
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateCategoryRequest $request)
+    public function update(UpdateCategoryRequest $request, Category $category)
     {
-        $category = Category::find($request->route('category'));
-
-        // Not found 404
-        if (!$category) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Category not found',
-            ], 404);
-        }
-
-        //  تحديث الصورة إذا تم رفعها
+        $data = $request->validated();
+        // تحقق مما إذا تم تحميل صورة جديدة
         if ($request->hasFile('image')) {
-            // حذف الصورة القديمة إن وجدت
+            // حذف الصورة القديمة إذا كانت موجودة
             if ($category->image) {
                 Storage::disk('public')->delete($category->image);
             }
 
             // حفظ الصورة الجديدة
-            $category->image = $request->file('image')->store('categories', 'public');
+            $data['image'] = $request->file('image')->store('categories', 'public');
         }
+        // $data['slug'] = Str::slug($request->name); or keep the old slug if name not changed
+        $data['slug'] = Str::slug($request->name) ?? $category->slug;
 
-        //  تحديث الاسم والوصف إذا تم إرسالها
-        if ($request->has('name')) {
-            $category->name = $request->name;
-            $category->slug = Str::slug($request->name);
-        }
-
-        if ($request->has('description')) {
-            $category->description = $request->description;
-        }
-
-        $category->save();
+        $category->update($data);
 
         return response()->json([
             'status' => true,
             'message' => 'Category updated successfully',
-            'data' => [
-                'id' => $category->id,
-                'name' => $category->name,
-                'slug' => $category->slug,
-                'description' => $category->description,
-                // 'image_url' => $category->image ? Storage::url($category->image) : null,
-                'image_url' => asset('storage/' . $category->image) ?? null,
-                'created_at' => $category->created_at->toDateTimeString(),
-                'updated_at' => $category->updated_at->toDateTimeString(),
-            ],
-        ]);
+            'data' => $category,
+        ], 200);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy()
+    public function destroy(Category $category)
     {
-        $category = Category::find(request()->route('category'));
-        // Not found 404
-        if (!$category) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Category not found',
-            ], 404);
-        }
-
         // حذف الصورة من التخزين إذا كانت موجودة
         if ($category->image) {
             Storage::disk('public')->delete($category->image);
