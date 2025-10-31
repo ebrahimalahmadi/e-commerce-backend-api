@@ -24,22 +24,23 @@ class LoginController extends Controller
 
         // التحقق من صحة كلمة المرور
         if (!$user || !Hash::check($validated['password'], $user->password)) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Invalid email or password'
-            ], 401);
+
+            return apiErrorResponse(
+                401,
+                'Invalid email or password'
+            );
         }
 
         // إنشاء التوكن
         $token = $user->createToken('API Token')->plainTextToken;
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Login successful',
-            'data' => [
+        return apiResponse(
+            200,
+            'Login successful',
+            [
                 'user' => $user,
                 'token' => $token
             ]
-        ], 200);
+        );
     }
 }

@@ -18,11 +18,12 @@ class ProfileController extends Controller
     public function show()
     {
         $user = Auth::user();
-        return response()->json([
-            'status' => true,
-            'message' => 'Profile data fetched successfully.',
-            'data' => $user
-        ], 200);
+
+        return apiResponse(
+            200,
+            'Profile data fetched successfully.',
+            $user
+        );
     }
 
     /**
@@ -36,11 +37,11 @@ class ProfileController extends Controller
 
         $user->update($validated);
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Profile updated successfully.',
-            'data' => $user
-        ], 200);
+        return apiResponse(
+            200,
+            'Profile updated successfully.',
+            $user
+        );
     }
 
 
@@ -77,9 +78,10 @@ class ProfileController extends Controller
         $user->password = Hash::make($validated['new_password']);
         $user->save();
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Password updated successfully'
-        ], 200);
+        return apiResponse(
+            200,
+            'Password updated successfully.',
+            $user
+        );
     }
 }

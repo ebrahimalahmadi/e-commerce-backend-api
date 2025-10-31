@@ -34,13 +34,13 @@ class RegisterController extends Controller
 
         $token = $user->createToken('API Token')->plainTextToken;
 
-        return response()->json([
-            'status' => true,
-            'message' => 'User registered successfully',
-            'data' => [
+        return apiResponse(
+            200,
+            'User registered successfully',
+            [
                 'user' => $user,
                 'token' => $token
             ]
-        ], 201);
+        );
     }
 }

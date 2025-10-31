@@ -22,12 +22,12 @@ class CategoryResource extends JsonResource
             'name' => $this->name,
             'slug' => $this->slug,
             'description' => $this->description,
-            // 'image' => $this->image,
-            // 'image_url' => $this->image ? Storage::url($this->image) : null,
             'image_url' => asset('storage/' . $this->image),
             'created_at' => $this->created_at->format('Y-m-d'),
             'updated_at' => $this->updated_at->format('Y-m-d'),
-            'products_count' => $this->products_count,
+            // 'products_count' => $this->products_count,
+            'products_count' => $this->whenCounted('products'),
+            'products' => ProductResource::collection($this->whenLoaded('products')),
         ];
     }
 }

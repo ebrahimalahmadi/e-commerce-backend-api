@@ -21,20 +21,18 @@ class CategoryController extends Controller
     public function index()
     {
         // $categories = Category::withCount('products')->latest()->get();
-        // $categories = Category::withCount('products')->latest()->paginate(10);
 
-        // $categories = Category::withCount('products')->latest()->paginate(10);
-        // $categories = Category::withCount('products')->latest()->paginate(10); // 10 per page
-        // $categories = Category::withCount('products')->latest()->get();
-        $categories = Category::withCount('products')->latest()->paginate(10); // 10 per page
+        $categories = Category::withCount('products')
+            ->latest()->paginate(10);
 
+        $categoriesResource =
+            CategoryResource::collection($categories);
 
-
-        $categoriesResource = CategoryResource::collection($categories);
-
-        return apiResponse(200, 'Categories retrieved successfully', $categoriesResource);
-
-        // return apiResponse(200, 'Categories retrieved successfully', $categories);
+        return apiResponse(
+            200,
+            'Categories retrieved successfully',
+            $categoriesResource
+        );
     }
 
     /**
@@ -44,7 +42,8 @@ class CategoryController extends Controller
     {
         $imagePath = null;
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('categories', 'public');
+            $imagePath = $request->file('image')
+                ->store('categories', 'public');
         }
 
         $category = Category::create([
@@ -53,13 +52,15 @@ class CategoryController extends Controller
             'description' => $request->description,
             'image' => $imagePath,
         ]);
-        // return response()->json([
-        //     'status' => true,
-        //     'message' => 'Category created successfully',
-        //     'data' => $category
-        // ], 201);
-        // return apiResponse(201, 'Category created successfully', $category);
-        return apiResponse(201, 'Category created successfully', $category);
+
+        $categoriesResource =
+            CategoryResource::make($category);
+
+        return apiResponse(
+            201,
+            'Category created successfully',
+            $categoriesResource
+        );
     }
 
 
@@ -69,11 +70,15 @@ class CategoryController extends Controller
     public function show(Category $category)
     {
         $category->load('products');
-        return response()->json([
-            'status' => true,
-            'message' => 'Category retrieved successfully',
-            'data' => $category
-        ], 200);
+
+        $categoryResource =
+            CategoryResource::make($category);
+
+        return apiResponse(
+            200,
+            'Category retrieved successfully',
+            $categoryResource
+        );
     }
 
     /**
@@ -97,18 +102,29 @@ class CategoryController extends Controller
 
         $category->update($data);
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Category updated successfully',
-            'data' => $category,
-        ], 200);
+        $categoryResource = CategoryResource::make($category);
+
+        return apiResponse(
+            200,
+            'Category updated successfully',
+            $categoryResource
+        );
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Category $category)
+    public function destroy($id)
     {
+        $category = Category::find($id);
+
+        if (!$category) {
+            return apiErrorResponse(
+                404,
+                'Category not found'
+            );
+        }
+
         // حذف الصورة من التخزين إذا كانت موجودة
         if ($category->image) {
             Storage::disk('public')->delete($category->image);
@@ -117,9 +133,9 @@ class CategoryController extends Controller
         // حذف التصنيف من قاعدة البيانات
         $category->delete();
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Category deleted successfully',
-        ], 200);
+        return apiResponse(
+            200,
+            'Category deleted successfully'
+        );
     }
 }

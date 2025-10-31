@@ -13,9 +13,9 @@ class LogoutController extends Controller
         // // حذف التوكن الحالي فقط
         $request->user()->currentAccessToken()->delete();
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Logged out successfully'
-        ], 200);
+        return apiResponse(
+            200,
+            'Logged out successfully'
+        );
     }
 }

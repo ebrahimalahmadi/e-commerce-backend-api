@@ -45,7 +45,6 @@ Route::middleware('auth:sanctum')->group(function () {
         }
     });
 
-
     // // Category Management Routes
     Route::controller(CategoryController::class)->group(function () { {
 
@@ -57,7 +56,6 @@ Route::middleware('auth:sanctum')->group(function () {
         }
     });
 
-
     // // Product Management Routes
     Route::controller(ProductController::class)->group(function () { {
 
@@ -66,38 +64,15 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('/products/{product}', 'show')->name('products.show'); // Show a specific product
             Route::put('/products/{product}', 'update')->name('products.update'); // Update a product
             Route::delete('/products/{product}', 'destroy')->name('products.destroy'); // Delete a product
+
+            // // Product Image Management Routes
+            Route::post('/products/{product}/images', 'uploadImages')->name('products.store'); // Upload images for a product
+            Route::delete('/products/{product}/images/delete', 'deleteImages')->name('products.images.destroy'); // Delete images for a product
+            Route::patch('/products/{product}/images/{image}/primary', 'setPrimaryImage')->name('products.images.setPrimary'); // Set an image as primary
         }
     });
-
-    // // Product Image Management Routes
-    Route::prefix('products/{product}/images')->group(function () {
-        Route::get('/', [ProductImageController::class, 'index'])->name('products.images.index'); // List all images for a product
-        Route::post('/', [ProductImageController::class, 'store'])->name('products.images.store'); // Add a new image to a product
-        Route::get('{image}', [ProductImageController::class, 'show'])->name('products.images.show'); // Show a specific image of a product
-        Route::put('{image}', [ProductImageController::class, 'update'])->name('products.images.update'); // Update a specific image of a product
-        Route::delete('{image}', [ProductImageController::class, 'destroy'])->name('products.images.destroy'); // Delete a specific image of a product
-        Route::patch('{image}/primary', [ProductImageController::class, 'setPrimary'])->name('products.images.setPrimary'); // Set an image as primary
-    });
-
-    //  list all products with images
-    Route::get('products-with-images', [ProductImageController::class, 'listProductsWithImages'])
-        ->name('products.images.products-with-images');
 });
 
 route::get('/test', function () {
     return response()->json(['message' => 'Welcome to the API']);
 });
-
-
-
-
-
-
-
-
-
-
-// ========================================================================
-//Note: For update requests (including image uploads) in Postman,
-// use POST and include _method=PUT to simulate a PUT request in Laravel
-//=========================================================================
