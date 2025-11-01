@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\API\V1\Admin\CategoryController;
+use App\Http\Controllers\API\V1\Admin\OrderController;
+use App\Http\Controllers\API\V1\Admin\OrderItemController;
 use App\Http\Controllers\API\V1\Admin\ProductController;
 use App\Http\Controllers\API\V1\Admin\ProductImageController;
 use App\Http\Controllers\API\V1\Auth\LoginController;
@@ -70,6 +72,23 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::delete('/products/{product}/images/delete', 'deleteImages')->name('products.images.destroy'); // Delete images for a product
             Route::patch('/products/{product}/images/{image}/primary', 'setPrimaryImage')->name('products.images.setPrimary'); // Set an image as primary
         }
+    });
+
+
+    // Order Routes
+    Route::apiResource('orders', OrderController::class);
+
+    // Order Status Update
+    Route::post('orders/{order}/status', [OrderController::class, 'updateStatus']); // Update Order Status
+
+    // User Orders
+    Route::get('user/orders', [OrderController::class, 'userOrders']); // User Orders
+
+    // Order Items Routes (متداخلة مع الطلبات)
+    Route::prefix('orders/{order}/items')->group(function () {
+        Route::post('/', [OrderItemController::class, 'store']); // Add an item to an order
+        Route::put('/{item}', [OrderItemController::class, 'update']); // Update an item in an order
+        Route::delete('/{item}', [OrderItemController::class, 'destroy']); // Remove an item from an order
     });
 });
 
